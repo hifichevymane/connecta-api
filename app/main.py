@@ -31,6 +31,19 @@ class BusinessCard(BaseModel):
     company_website: str | None = None
 
 
+# Update schema of business card
+class UpdateBusinessCard(BaseModel):
+
+    company_name: str | None = None
+    company_services_type: str | None = None
+    company_description: str | None = None
+    company_phone_number: str | None = None
+    company_instagram: str | None = None
+    company_telegram: str | None = None
+    company_address: str | None = None
+    company_website: str | None = None
+
+
 # Get all business Cards
 @app.get('/business_cards')
 def get_business_cards(db: Session = Depends(get_db)):
@@ -38,7 +51,7 @@ def get_business_cards(db: Session = Depends(get_db)):
     # Получение списка всех обьектов бд
     all_business_cards = db.query(models.BusinessCardModel).all()
     
-    return {'all_business_cards': all_business_cards}
+    return all_business_cards
 
 
 # Create business card
@@ -52,7 +65,7 @@ def create_business_card(business_card: BusinessCard, db: Session = Depends(get_
     db.commit()
     db.refresh(new_business_card)
     
-    return {'business_card_detail': new_business_card}
+    return new_business_card
 
 
 # Get business card by id
@@ -67,7 +80,7 @@ def get_business_card_by_id(id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"business card with id {id} wasn't found")
 
-    return {"business_card_detail": business_card}
+    return business_card
 
 
 # Delete a business card
@@ -90,8 +103,8 @@ def delete_business_card(id: int, db: Session = Depends(get_db)):
 
 
 # Update a business card
-@app.put('/business_cards/{id}')
-def update_business_card(id: int, updated_business_card: BusinessCard, db: Session = Depends(get_db)):
+@app.patch('/business_cards/{id}')
+def update_business_card(id: int, updated_business_card: UpdateBusinessCard, db: Session = Depends(get_db)):
 
     # Find query and saving business_card_query.first() in business_card
     business_card_query = db.query(models.BusinessCardModel).filter(models.BusinessCardModel.id == id)
@@ -103,7 +116,7 @@ def update_business_card(id: int, updated_business_card: BusinessCard, db: Sessi
                             detail=f"business card with id {id} wasn't found")
     
     # Update business card with id and saving results
-    business_card_query.update(updated_business_card.dict(), synchronize_session=False)
+    business_card_query.update(updated_business_card.dict(exclude_unset=True), synchronize_session=False)
     db.commit()
 
-    return {'business_card_detail': business_card_query.first()}
+    return business_card_query.first()
