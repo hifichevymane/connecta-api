@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 # Business card schema
 class BusinessCardBase(BaseModel):
@@ -26,3 +26,32 @@ class UpdateBusinessCard(BusinessCardBase):
     company_description: str | None = None
     company_phone_number: str | None = None
     company_address: str | None = None
+
+
+# Response schema
+class BusinessCard(BusinessCardBase):
+
+    id: int
+
+    class Config:
+        orm_mode = True
+
+
+# A User schema
+class UserCreate(BaseModel):
+
+    first_name: str
+    last_name: str
+    email: EmailStr
+    password: str
+
+
+class User(BaseModel):
+
+    id: int
+    first_name: str
+    last_name: str
+    email: EmailStr
+
+    class Config:
+        orm_mode = True

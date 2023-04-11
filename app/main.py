@@ -1,8 +1,10 @@
 from fastapi import FastAPI, status, HTTPException, Response, Depends
-from . import schemas, models
+from . import schemas, models, utils
 from .database import engine, SessionLocal
 from sqlalchemy.orm import Session
+from typing import List
 
+# Creating all tables in database if not exists
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
@@ -18,7 +20,7 @@ def get_db():
 
 
 # Get all business Cards
-@app.get('/business_cards')
+@app.get('/business_cards', response_model=List[schemas.BusinessCard])
 def get_business_cards(db: Session = Depends(get_db)):
 
     # Получение списка всех обьектов бд
@@ -28,7 +30,7 @@ def get_business_cards(db: Session = Depends(get_db)):
 
 
 # Create business card
-@app.post('/business_cards', status_code=status.HTTP_201_CREATED)
+@app.post('/business_cards', status_code=status.HTTP_201_CREATED, response_model=schemas.BusinessCard)
 def create_business_card(business_card: schemas.CreateBusinessCard, db: Session = Depends(get_db)):
 
     # Creating an object of BusinessCardModel
@@ -42,7 +44,7 @@ def create_business_card(business_card: schemas.CreateBusinessCard, db: Session 
 
 
 # Get business card by id
-@app.get('/business_cards/{id}')
+@app.get('/business_cards/{id}', response_model=schemas.BusinessCard)
 def get_business_card_by_id(id: int, db: Session = Depends(get_db)):
 
     # SELECT ... WHERE query
@@ -76,7 +78,7 @@ def delete_business_card(id: int, db: Session = Depends(get_db)):
 
 
 # Update a business card
-@app.patch('/business_cards/{id}')
+@app.patch('/business_cards/{id}', response_model=schemas.BusinessCard)
 def update_business_card(id: int, updated_business_card: schemas.UpdateBusinessCard, db: Session = Depends(get_db)):
 
     # Find query and saving business_card_query.first() in business_card
@@ -93,3 +95,20 @@ def update_business_card(id: int, updated_business_card: schemas.UpdateBusinessC
     db.commit()
 
     return business_card_query.first()
+
+
+# Creating a new user
+@app.post('/users', status_code=status.HTTP_201_CREATED, response_model=schemas.User)
+def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+
+    # Creating a hash of a password
+    user.password = utils.hash(user.password)
+
+    # Creating an object of a User model
+    new_user = models.UserModel(**user.dict())
+
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+
+    return new_user
