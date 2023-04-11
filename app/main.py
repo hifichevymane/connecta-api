@@ -1,4 +1,5 @@
 from fastapi import FastAPI, status, HTTPException, Response, Depends
+from . import schemas
 from pydantic import BaseModel
 from . import models
 from .database import engine, SessionLocal
@@ -18,32 +19,6 @@ def get_db():
         db.close()
 
 
-# Business card schema
-class BusinessCard(BaseModel):
-
-    company_name: str
-    company_services_type: str
-    company_description: str
-    company_phone_number: str
-    company_instagram: str | None = None
-    company_telegram: str | None = None
-    company_address: str
-    company_website: str | None = None
-
-
-# Update schema of business card
-class UpdateBusinessCard(BaseModel):
-
-    company_name: str | None = None
-    company_services_type: str | None = None
-    company_description: str | None = None
-    company_phone_number: str | None = None
-    company_instagram: str | None = None
-    company_telegram: str | None = None
-    company_address: str | None = None
-    company_website: str | None = None
-
-
 # Get all business Cards
 @app.get('/business_cards')
 def get_business_cards(db: Session = Depends(get_db)):
@@ -56,7 +31,7 @@ def get_business_cards(db: Session = Depends(get_db)):
 
 # Create business card
 @app.post('/business_cards', status_code=status.HTTP_201_CREATED)
-def create_business_card(business_card: BusinessCard, db: Session = Depends(get_db)):
+def create_business_card(business_card: schemas.BusinessCard, db: Session = Depends(get_db)):
 
     # Creating an object of BusinessCardModel
     new_business_card = models.BusinessCardModel(**business_card.dict())
@@ -104,7 +79,7 @@ def delete_business_card(id: int, db: Session = Depends(get_db)):
 
 # Update a business card
 @app.patch('/business_cards/{id}')
-def update_business_card(id: int, updated_business_card: UpdateBusinessCard, db: Session = Depends(get_db)):
+def update_business_card(id: int, updated_business_card: schemas.UpdateBusinessCard, db: Session = Depends(get_db)):
 
     # Find query and saving business_card_query.first() in business_card
     business_card_query = db.query(models.BusinessCardModel).filter(models.BusinessCardModel.id == id)
