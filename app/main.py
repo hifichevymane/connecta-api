@@ -1,7 +1,5 @@
 from fastapi import FastAPI, status, HTTPException, Response, Depends
-from . import schemas
-from pydantic import BaseModel
-from . import models
+from . import schemas, models
 from .database import engine, SessionLocal
 from sqlalchemy.orm import Session
 
@@ -31,7 +29,7 @@ def get_business_cards(db: Session = Depends(get_db)):
 
 # Create business card
 @app.post('/business_cards', status_code=status.HTTP_201_CREATED)
-def create_business_card(business_card: schemas.BusinessCard, db: Session = Depends(get_db)):
+def create_business_card(business_card: schemas.CreateBusinessCard, db: Session = Depends(get_db)):
 
     # Creating an object of BusinessCardModel
     new_business_card = models.BusinessCardModel(**business_card.dict())
