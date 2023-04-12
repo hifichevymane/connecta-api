@@ -46,6 +46,7 @@ class UserCreate(BaseModel):
     password: str
 
 
+# User response schema
 class User(BaseModel):
 
     id: int
@@ -55,3 +56,10 @@ class User(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+# User Login schema
+class UserLogin(BaseModel):
+
+    email: EmailStr
+    password: str
