@@ -1,15 +1,17 @@
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
-from . import schemas
+from . import schemas, models
+from .database import get_db
 from fastapi import Depends, status, HTTPException
-from fastapi.security.oauth2 import OAuth2AuthorizationCodeBearer
+from fastapi.security.oauth2 import OAuth2PasswordBearer
+from sqlalchemy.orm import Session
 
 # Config of JWT token function 
 SECRET_KEY = "a87c310a11366deac2cddad9559bd8f88b7883eed7be02ab816690530de100d9"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
-oauth2_schema = OAuth2AuthorizationCodeBearer(tokenUrl='login')
+oauth2_schema = OAuth2PasswordBearer(tokenUrl='login')
 
 # Creating JWT token function
 def create_access_token(data: dict):
@@ -48,10 +50,14 @@ def verify_access_token(token: str, login_exception):
 
 
 # Getting user id from JWT token
-def get_current_user(token: str = Depends(oauth2_schema)):
+def get_current_user(token: str = Depends(oauth2_schema), db: Session = Depends(get_db)):
 
     login_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                                     detail='Could not validate login',
                                     headers={'WWW-Authenticate': "Bearer"})
 
-    return verify_access_token(token, login_exception)
+    token = verify_access_token(token, login_exception)
+    # Finding row with id == token.id
+    user = db.query(models.UserModel).filter(models.UserModel.id == token.id).first()
+
+    return user

@@ -15,12 +15,12 @@ def login(user_login_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
     user = db.query(models.UserModel).filter(models.UserModel.email == user_login_data.username).first()
 
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail="Invalid login data")
 
     # If user entered a wrong password
     if not utils.verify(user_login_data.password ,user.password):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail='Invalid password')
     
     # Creating an access token for login
