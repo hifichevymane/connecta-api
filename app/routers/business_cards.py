@@ -1,5 +1,5 @@
 from fastapi import status, HTTPException, Response, Depends, APIRouter
-from .. import schemas, models
+from .. import schemas, models, oauth2
 from ..database import get_db
 from sqlalchemy.orm import Session
 from typing import List
@@ -15,7 +15,9 @@ router = APIRouter(
 
 # Get all business cards
 @router.get('/', response_model=List[schemas.BusinessCard])
-def get_business_cards(db: Session = Depends(get_db)):
+def get_business_cards(db: Session = Depends(get_db),
+                       # If user has logged in
+                       current_user: int = Depends(oauth2.get_current_user)):
 
     # Get all rows in a database
     all_business_cards = db.query(models.BusinessCardModel).all()
@@ -25,7 +27,9 @@ def get_business_cards(db: Session = Depends(get_db)):
 
 # Create business card
 @router.post('/', status_code=status.HTTP_201_CREATED, response_model=schemas.BusinessCard)
-def create_business_card(business_card: schemas.CreateBusinessCard, db: Session = Depends(get_db)):
+def create_business_card(business_card: schemas.CreateBusinessCard, db: Session = Depends(get_db),
+                         # If user has logged in
+                         current_user: int = Depends(oauth2.get_current_user)):
 
     # Creating an object of BusinessCardModel
     new_business_card = models.BusinessCardModel(**business_card.dict())
@@ -39,7 +43,9 @@ def create_business_card(business_card: schemas.CreateBusinessCard, db: Session 
 
 # Get business card by id
 @router.get('/{id}', response_model=schemas.BusinessCard)
-def get_business_card_by_id(id: int, db: Session = Depends(get_db)):
+def get_business_card_by_id(id: int, db: Session = Depends(get_db),
+                            # If user has logged in
+                            current_user: int = Depends(oauth2.get_current_user)):
 
     # SELECT ... WHERE query
     business_card = db.query(models.BusinessCardModel).filter(models.BusinessCardModel.id == id).first()
@@ -54,7 +60,9 @@ def get_business_card_by_id(id: int, db: Session = Depends(get_db)):
 
 # Delete a business card
 @router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
-def delete_business_card(id: int, db: Session = Depends(get_db)):
+def delete_business_card(id: int, db: Session = Depends(get_db),
+                         # If user has logged in
+                         current_user: int = Depends(oauth2.get_current_user)):
 
     # Find a business card by id
     business_card = db.query(models.BusinessCardModel).filter(models.BusinessCardModel.id == id)
@@ -73,7 +81,10 @@ def delete_business_card(id: int, db: Session = Depends(get_db)):
 
 # Update a business card
 @router.patch('/{id}', response_model=schemas.BusinessCard)
-def update_business_card(id: int, updated_business_card: schemas.UpdateBusinessCard, db: Session = Depends(get_db)):
+def update_business_card(id: int, updated_business_card: schemas.UpdateBusinessCard,
+                         db: Session = Depends(get_db),
+                         # If user has logged in
+                         current_user: int = Depends(oauth2.get_current_user)):
 
     # Find query and saving business_card_query.first() in business_card
     business_card_query = db.query(models.BusinessCardModel).filter(models.BusinessCardModel.id == id)

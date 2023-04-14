@@ -63,3 +63,17 @@ class UserLogin(BaseModel):
 
     email: EmailStr
     password: str
+
+
+# Token schema
+class Token(BaseModel):
+
+    access_token: str
+    token_type: str
+
+
+# Token Data schema
+class TokenData(BaseModel):
+
+    # Optional value
+    id: str | None = None
