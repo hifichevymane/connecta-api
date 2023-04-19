@@ -32,6 +32,7 @@ class UpdateBusinessCard(BusinessCardBase):
 class BusinessCard(BusinessCardBase):
 
     id: int
+    owner_id: int
 
     class Config:
         orm_mode = True
@@ -77,3 +78,13 @@ class TokenData(BaseModel):
 
     # Optional value
     id: str | None = None
+
+
+# Response schema for getting user's posts
+class BusinessCardsUsers(BaseModel):
+
+    user_id: int
+    business_card: BusinessCard
+
+    class Config:
+        orm_mode = True
