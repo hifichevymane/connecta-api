@@ -4,6 +4,7 @@ from ..database import get_db
 from sqlalchemy.orm import Session
 from .. import schemas, models, utils, oauth2
 
+# Create an object of APIRouter.Tags parameter is used for structure paths in Swagger UI
 router = APIRouter(tags=['Login'])
 
 
