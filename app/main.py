@@ -4,7 +4,7 @@ from .database import engine
 from .routers import business_cards, users, auth
 
 # Creating all tables in database if not exists
-models.Base.metadata.create_all(bind=engine)
+# models.Base.metadata.create_all(bind=engine)
 
 # Create an object FastAPI
 app = FastAPI()

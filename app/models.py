@@ -47,3 +47,16 @@ class BusinessCardsUsersModel(Base):
     # Relationship with table 'business_card' and 'users'(business_card_id foreign key and user_id foreign key)
     business_card = relationship('BusinessCardModel')
     users = relationship('UserModel')
+
+
+# Database table 'reports'
+class ReportModel(Base):
+
+    __tablename__ = 'reports'
+
+    id = Column(Integer, primary_key=True, nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    report_description = Column(Text, nullable=False)
+
+    # Relationship with table 'users'
+    users = relationship('UserModel')

@@ -14,13 +14,19 @@ router = APIRouter(
 # Insted of '/' we could use '/business_cards' without prefix parameter in router object
 
 # Get all business cards
-@router.get('/', response_model=List[schemas.BusinessCardsUsers])
+@router.get('/', response_model=List[schemas.BusinessCard])
 def get_business_cards(db: Session = Depends(get_db),
                        # If user has logged in
-                       current_user: int = Depends(oauth2.get_current_user)):
+                       current_user: int = Depends(oauth2.get_current_user),
+                       search_name: str | None = ''):
 
     # Get all rows in a database
-    all_business_cards = db.query(models.BusinessCardsUsersModel).filter(models.BusinessCardsUsersModel.user_id == current_user.id).all()
+    # all_business_cards = db.query(models.BusinessCardsUsersModel).join(models.BusinessCardModel).filter(models.BusinessCardsUsersModel.user_id == current_user.id, models.BusinessCardModel.company_name.contains(search_name)).all()
+    # Get rows using JOIN
+    all_business_cards = db.query(models.BusinessCardModel).join(models.BusinessCardsUsersModel, isouter=True). \
+        filter(models.BusinessCardsUsersModel.user_id == current_user.id,
+               models.BusinessCardModel.id == models.BusinessCardsUsersModel.business_card_id,
+               models.BusinessCardModel.company_name.contains(search_name)).all()
     
     return all_business_cards
 
@@ -49,22 +55,25 @@ def create_business_card(business_card: schemas.CreateBusinessCard, db: Session 
 
 
 # Get business card by id
-@router.get('/{id}', response_model=schemas.BusinessCardsUsers)
+@router.get('/{id}', response_model=schemas.BusinessCard)
 def get_business_card_by_id(id: int, db: Session = Depends(get_db),
                             # If user has logged in
                             current_user: int = Depends(oauth2.get_current_user)):
 
     # SELECT ... WHERE query
-    business_card = db.query(models.BusinessCardsUsersModel).filter(models.BusinessCardsUsersModel.business_card_id == id).first()
-
+    # business_card = db.query(models.BusinessCardsUsersModel).filter(models.BusinessCardsUsersModel.business_card_id == id).first()
+    business_card = db.query(models.BusinessCardModel).join(models.BusinessCardsUsersModel, isouter=True). \
+        filter(models.BusinessCardsUsersModel.user_id == current_user.id,
+               models.BusinessCardModel.id == id).first()
+    
     # If we didn't found a business card with that id -> 404 HTTP
     if not business_card:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"business card with id {id} wasn't found")
 
-    # If user can check only his business cards
-    if business_card.user_id != current_user.id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    # # If user can check only his business cards
+    # if business_card.user_id != current_user.id:
+    #     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
     
     return business_card
 
