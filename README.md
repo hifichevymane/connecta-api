@@ -3,9 +3,13 @@ This is API for android app Connecta, where you can create and store you busines
 
 # Installation
 1. Clone git repository
-2. Create a virtual enviroment
+2. Create a virtual enviroment and activate it
 ```
 python -m venv venv
+```
+If you have Windows to activate this you need run this command:
+```
+venv\Scripts\activate
 ```
 3. Install all dependencies 
 ```
@@ -19,8 +23,8 @@ openssl rand -hex 32
 ```
 Then you'll be given a secret key
 
-2. Create .env file
-3. Make options like this:
+2. Create .env file(MAKE .env FILE, NOT .env.txt)
+3. Write options in .env like this:
 ```
 DATABASE_HOSTNAME=localhost
 DATABASE_PORT=5432
