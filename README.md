@@ -35,6 +35,7 @@ SECRET_KEY=secret key, that you get in 1 step
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=60
 ```
+ALERT!!! YOU NEED TO CREATE A DB IN POSTGRES WITH NAME "connecta"
 4. Run this command in terminal VS Code, Powershell, Bash or else:
 ```
 alembic upgrade 616c3a64bd42
