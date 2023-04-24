@@ -37,7 +37,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES=60
 ```
 4. Run this command in terminal VS Code, Powershell, Bash or else:
 ```
-alembic upgrade head
+alembic upgrade 616c3a64bd42
 ```
 This will migrate all database tables in PostgreSQL
 
