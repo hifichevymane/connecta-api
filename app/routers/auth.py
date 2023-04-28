@@ -9,7 +9,7 @@ router = APIRouter(tags=['Login'])
 
 
 # Login
-@router.post('/login')
+@router.post('/api/login')
 def login(user_login_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
 
     # Find user by email

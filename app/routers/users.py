@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 # Create an object of APIRouter. prefix parameter with '/users' is shortcut for our paths
 # Tags parameter is used for structure paths in Swagger UI
 router = APIRouter(
-    prefix='/users',
+    prefix='/api/users',
     tags=['Users']
 )
 
