@@ -9,11 +9,13 @@ from .routers import business_cards, users, auth
 
 # Create an object FastAPI
 app = FastAPI()
+# Allowed origins for CORS
+origins = ['*']
 
 # Add CORS support
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['*'],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=['*'],
     allow_headers=['*'],

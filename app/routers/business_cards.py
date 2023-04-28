@@ -7,7 +7,7 @@ from typing import List
 # Create an object of APIRouter. prefix parameter with '/business_cards' is shortcut for our paths
 # Tags parameter is used for structure paths in Swagger UI
 router = APIRouter(
-    prefix='/business_cards',
+    prefix='/api/business_cards',
     tags=['Business Cards']
 )
 
